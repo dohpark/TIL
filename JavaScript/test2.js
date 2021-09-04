@@ -1,5 +1,5 @@
 var arr = [];
-for (var i = 0; i < 5; i++) {
+for (var i = 0; i < 3; i++) {
   arr[i] = (function (i) {
     return function () {
       return i;

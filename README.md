@@ -32,3 +32,4 @@
 
 - [[JS]프로토타입체인1(08.31)](https://dohpark.tistory.com/7)
 - [[JS]프로토타입체인2(09.01)](./JavaScript/프로토타입체인.md)
+- [[JS]클로저와 관련 개념 정리(09.04)](https://dohpark.tistory.com/9)
