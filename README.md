@@ -26,6 +26,7 @@
 - [[알고리즘]폰켓몬(08.28)](https://dohpark.tistory.com/5)
 - [[알고리즘]기능개발(09.01)](https://dohpark.tistory.com/8)
 - [[알고리즘]예상 대진표(09.04)](./알고리즘/예상대진표.md)
+- [[알고리즘]구명보트(09.08)](https://dohpark.tistory.com/12)
 
 #### 리액트
 
