@@ -1,11 +1,29 @@
+// const solution = (time, distance) => {
+//   let speed = [];
+
+//   for (let i = 0; i < time.length; i++) {
+//     speed.push(distance[i] / time[i]);
+//   }
+
+//   return speed;
+// };
+
 const solution = (time, distance) => {
-  let speed = [];
-
-  for (let i = 0; i < time.length; i++) {
-    speed.push(distance[i] / time[i]);
+  const dist = distance.length;
+  let enemy = [];
+  let result = 0;
+  for (let i = 0; i < dist; i++) {
+    enemy.push(distance[i] / time[i]);
   }
-
-  return speed;
+  enemy.sort((x, y) => x - y);
+  for (const person of enemy) {
+    if (person - result <= 0) {
+      break;
+    }
+    result++;
+  }
+  console.log(enemy);
+  return result;
 };
 
 console.log(3, solution([1, 1, 1, 1], [1, 2, 3, 3]));

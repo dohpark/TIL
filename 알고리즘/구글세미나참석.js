@@ -1,24 +1,35 @@
-const solution = (arr) => {
-  let pos = [];
-  let setArray = [];
+// const solution = (arr) => {
+//   let pos = [];
+//   let setArray = [];
 
-  for (let i = 0; i < 2; i++) {
-    for (let j = 0; j < 2; j++) {
-      for (let k = 0; k < 2; k++) {
-        for (let l = 0; l < 2; l++) {
-          pos.push([arr[0][i], arr[1][j], arr[2][k], arr[3][l]]);
-        }
-      }
-    }
-  }
+//   for (let i = 0; i < 2; i++) {
+//     for (let j = 0; j < 2; j++) {
+//       for (let k = 0; k < 2; k++) {
+//         for (let l = 0; l < 2; l++) {
+//           pos.push([arr[0][i], arr[1][j], arr[2][k], arr[3][l]]);
+//         }
+//       }
+//     }
+//   }
 
-  for (let m = 0; m < pos.length; m++) {
-    let set = new Set([...pos[m]]);
-    let setLength = [...set].length;
-    setArray.push(setLength);
+//   for (let m = 0; m < pos.length; m++) {
+//     let set = new Set([...pos[m]]);
+//     let setLength = [...set].length;
+//     setArray.push(setLength);
+//   }
+//   return Math.max(...setArray);
+// };
+
+function solution(arr) {
+  let temp = new Set();
+  arr.sort((a, b) => (a[1] == b[1] ? a[0] - b[0] : a[1] - b[1]));
+  console.log(arr);
+  for (let [i, j] of arr) {
+    while (i <= j && temp.has(i)) ++i;
+    if (i <= j) temp.add(i);
   }
-  return Math.max(...setArray);
-};
+  return temp.size;
+}
 
 console.log(
   solution([
