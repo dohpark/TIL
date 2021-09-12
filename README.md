@@ -54,3 +54,4 @@
 - [[JS]클로저와 관련 개념 정리(09.04)](https://dohpark.tistory.com/9)
 - [[JS]Expanding Cards(09.07)](https://github.com/dohpark/50days/tree/main/Day1)
 - [[JS]정규 표현식(09.12)](./JavaScript/RegExp.md)
+- [[JS]Progress Steps(09.12)](https://github.com/dohpark/50days/tree/main/Day2)
