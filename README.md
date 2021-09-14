@@ -37,6 +37,7 @@
 - [[알고리즘]영어 끝말잇기(09.09)](https://dohpark.tistory.com/13)
 - [[알고리즘]스킬트리(09.11)](https://dohpark.tistory.com/14)
 - [[알고리즘]다리를 지나는 트럭(09.13)](https://dohpark.tistory.com/16)
+- [[알고리즘]땅따먹기(09.14)](https://dohpark.tistory.com/17)
 
 #### 리액트
 
