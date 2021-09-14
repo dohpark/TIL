@@ -58,3 +58,4 @@
 - [[JS]Expanding Cards(09.07)](https://github.com/dohpark/50days/tree/main/Day1)
 - [[JS]정규 표현식(09.12)](./JavaScript/RegExp.md)
 - [[JS]Progress Steps(09.12)](https://github.com/dohpark/50days/tree/main/Day2)
+- [[JS]Rotating Navigation(09.14)](https://github.com/dohpark/50days/tree/main/Day3)
