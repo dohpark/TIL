@@ -32,7 +32,7 @@
 
 - [[알고리즘]폰켓몬(08.28)](https://dohpark.tistory.com/5)
 - [[알고리즘]기능개발(09.01)](https://dohpark.tistory.com/8)
-- [[알고리즘]예상 대진표(09.04)](./알고리즘/예상대진표.md)
+- [[알고리즘]예상 대진표(09.04)](./알고리즘/문제/예상대진표.md)
 - [[알고리즘]구명보트(09.08)](https://dohpark.tistory.com/12)
 - [[알고리즘]영어 끝말잇기(09.09)](https://dohpark.tistory.com/13)
 - [[알고리즘]스킬트리(09.11)](https://dohpark.tistory.com/14)
@@ -65,3 +65,6 @@
 - [[JS]String객체(09.16)](./JavaScript/String.md)
 - [[JS]Set객체(09.16)](./JavaScript/Set객체.md)
 - [[JS]Map객체(09.22)](./JavaScript/Map객체.md)
+- [[JS]기본문법1(변수와상수 & 자료형 & 객체타입 & 객체복사문제점)(09.24)](./알고리즘/기본문법/js문법1.md)
+- [[JS]Split Landing Page(09.25)](https://github.com/dohpark/50days/tree/main/Day7)
+- [[JS]기본문법1(형변환 & 연산자 & scope & 조건문 & 반복문)(09.25)](./알고리즘/기본문법/js문법2.md)
