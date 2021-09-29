@@ -1,3 +1,5 @@
+// 등차수열의 항 찾기
+
 function answer(a, d, n) {
   let index = -1;
   let arr = [];
