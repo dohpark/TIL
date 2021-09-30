@@ -51,6 +51,7 @@ function answer(n, m, k) {
       prev = current;
       current = current.next;
     }
+    // 도착하면 inner while문을 벗어나 result에 push 후 노드 삭제
   }
 
   // 4. 혼자 남은 후보 번호를 result 추가
