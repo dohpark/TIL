@@ -1,47 +1,81 @@
-function Queue_1(array) {
-  this.array = array ? array : [];
+// CircularQueue()
+function CircularQueue(array = [], size = 5) {
+  this.array = array;
+  this.size = array.length > size ? array.length : size;
+  this.length = array.length;
+  this.head = 0; // head index
+  this.tail = array.length; // tail index
 }
 
-Queue_1.prototype.enqueue = function (element) {
-  return this.array.push(element);
+// getBuffer()
+CircularQueue.prototype.getBuffer = function () {
+  return this.array.slice();
 };
 
-Queue_1.prototype.dequeue = function () {
-  return this.array.shift();
+// isEmpty()
+CircularQueue.prototype.isEmpty = function () {
+  return this.length == 0;
 };
 
-function Queue_2(array) {
-  this.array = array ? array : [];
-  this.tail = array ? array.length : 0;
-  this.head = 0;
-}
-
-Queue_2.prototype.enqueue = function (element) {
-  return (this.array[this.tail++] = element);
+// isFull()
+CircularQueue.prototype.isFull = function () {
+  return this.length == this.size;
 };
 
-Queue_2.prototype.dequeue = function () {
-  if (this.tail === this.head) return undefined;
+// enqueue()
+CircularQueue.prototype.enqueue = function (element) {
+  if (this.isFull()) return false;
+
+  this.array[this.tail] = element; // tail 자리에 신규 엘리먼트 삽입
+  this.tail = (this.tail + 1) % this.size; // tail++ 한 후 size보다 크면 안되니 size값을 나눠 나머지 값을 구함
+  this.length++;
+
+  return true;
+};
+
+// dequeue()
+CircularQueue.prototype.dequeue = function () {
+  if (this.isEmpty()) return undefined;
 
   let element = this.array[this.head];
-  delete this.array[this.head++];
-  return element;
+  delete this.array[this.head]; // 현재 head 자리의 element 삭제
+  this.head = (this.head + 1) % this.size; // head++ 후 나머지 값을 구함으로써 size를 안넘기도록 함
+  this.length--;
+
+  return element; // 삭제한 element 반환
 };
 
-let queue_1 = new Queue_1();
-let queue_2 = new Queue_2();
-const count = 100000;
+// front()
+CircularQueue.prototype.front = function () {
+  return this.length == 0 ? undefined : this.array[this.head]; // head의 value값 반환
+};
 
-function benchmark(queue, enqueue) {
-  let start = Date.now();
-  for (let i = 0; i < count; i++) {
-    enqueue ? queue.enqueue() : queue.dequeue();
-  }
-  return Date.now() - start;
-}
+// dataSize()
+CircularQueue.prototype.dataSize = function () {
+  return this.length;
+};
 
-console.log("enqueue queue_1: " + benchmark(queue_1, 1) + "ms"); // queue_1: 8ms
-console.log("enqueue queue_2: " + benchmark(queue_2, 1) + "ms"); // queue_2: 6ms
+// clear()
+CircularQueue.prototype.clear = function (size = DEFAULT_SIZE) {
+  this.array = [];
+  this.size = size;
+  this.length = 0;
+  this.head = 0;
+  this.tail = 0;
+}; // 처음 세팅처럼
 
-console.log("dequeue queue_1: " + benchmark(queue_1, 0) + "ms"); // queue_1: 5695ms
-console.log("enqueue queue_2: " + benchmark(queue_2, 0) + "ms"); // queue_2: 9ms
+let cq = new CircularQueue([1, 2, 3, 4]);
+
+cq.enqueue(5);
+cq.enqueue(6);
+console.log(cq.dequeue());
+console.log(cq.dequeue());
+console.log(cq);
+
+cq.enqueue(6);
+console.log(cq);
+console.log(cq.front());
+console.log(cq.dataSize());
+
+cq.clear(10);
+console.log(cq);
