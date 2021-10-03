@@ -1,81 +1,96 @@
-// CircularQueue()
-function CircularQueue(array = [], size = 5) {
-  this.array = array;
-  this.size = array.length > size ? array.length : size;
-  this.length = array.length;
-  this.head = 0; // head index
-  this.tail = array.length; // tail index
+// Dictionary()
+function Dictionary(items = {}) {
+  this.items = items;
 }
 
 // getBuffer()
-CircularQueue.prototype.getBuffer = function () {
-  return this.array.slice();
-};
-
-// isEmpty()
-CircularQueue.prototype.isEmpty = function () {
-  return this.length == 0;
-};
-
-// isFull()
-CircularQueue.prototype.isFull = function () {
-  return this.length == this.size;
-};
-
-// enqueue()
-CircularQueue.prototype.enqueue = function (element) {
-  if (this.isFull()) return false;
-
-  this.array[this.tail] = element; // tail 자리에 신규 엘리먼트 삽입
-  this.tail = (this.tail + 1) % this.size; // tail++ 한 후 size보다 크면 안되니 size값을 나눠 나머지 값을 구함
-  this.length++;
-
-  return true;
-};
-
-// dequeue()
-CircularQueue.prototype.dequeue = function () {
-  if (this.isEmpty()) return undefined;
-
-  let element = this.array[this.head];
-  delete this.array[this.head]; // 현재 head 자리의 element 삭제
-  this.head = (this.head + 1) % this.size; // head++ 후 나머지 값을 구함으로써 size를 안넘기도록 함
-  this.length--;
-
-  return element; // 삭제한 element 반환
-};
-
-// front()
-CircularQueue.prototype.front = function () {
-  return this.length == 0 ? undefined : this.array[this.head]; // head의 value값 반환
-};
-
-// dataSize()
-CircularQueue.prototype.dataSize = function () {
-  return this.length;
+Dictionary.prototype.getBuffer = function () {
+  return { ...this.items }; // spread문법 사용
 };
 
 // clear()
-CircularQueue.prototype.clear = function (size = DEFAULT_SIZE) {
-  this.array = [];
-  this.size = size;
-  this.length = 0;
-  this.head = 0;
-  this.tail = 0;
-}; // 처음 세팅처럼
+Dictionary.prototype.clear = function () {
+  this.items = {}; // 초기화
+};
 
-let cq = new CircularQueue([1, 2, 3, 4]);
+// size()
+Dictionary.prototype.size = function () {
+  return Object.keys(this.items).length; // key값으로 구성한 배열로 변환 후 length 값 반환
+};
 
-cq.enqueue(5);
-cq.enqueue(6);
-console.log(cq.dequeue());
-console.log(cq.dequeue());
-console.log(cq);
+// has(): 개체 존재 여부 확인
+Dictionary.prototype.has = function (key) {
+  // return value in this.items; <- 배열로 존재하는지 확인
+  return this.items.hasOwnProperty(key);
+  // Object.hasOwnProperty: 객체 내 특정 key 값이 존재하면 true 반환. key의 value값이 null or undefined이어도 true 반환
+};
 
-cq.enqueue(6);
-console.log(cq);
-console.log(cq.front());
-console.log(cq.dataSize());
+// set(): 개체(Entity) 추가
+Dictionary.prototype.set = function (key, value) {
+  this.items[key] = value;
+};
 
-cq.clear(10);
-console.log(cq);
+// get(): 개체(Entity)의 value 반환
+Dictionary.prototype.get = function (key) {
+  return this.has(key) ? this.items[key] : undefined; // 있는지 없는지 확인 후 있으면 반환
+};
+
+// remove(): 개체 (Entity) 삭제
+Dictionary.prototype.remove = function (key) {
+  if (this.has(key)) {
+    // key가 있는지 없는지 확인 후
+    delete this.items[key]; // 삭제
+    return true;
+  }
+
+  return false;
+};
+
+// keys(): 모든 key 값을 배열 형태로 반환
+Dictionary.prototype.keys = function () {
+  return Object.keys(this.items);
+};
+
+// values(): 모든 value 값을 배열 형태로 반환
+Dictionary.prototype.values = function () {
+  /**
+   * let values = [];
+   * for (let k in this.items) {
+   *   values.push(this.items[k]);
+   * }
+   * return values;
+   */
+
+  return Object.values(this.items);
+};
+
+// each()
+Dictionary.prototype.each = function (fn) {
+  for (let k in this.items) {
+    fn(k, this.items[k]);
+  }
+};
+
+// printDictionary()
+function printDictionary(key, value) {
+  console.log(`key: ${key}`);
+  console.log(`value: ${value}`);
+}
+
+let dict = new Dictionary();
+dict.set("age", 19);
+dict.set("name", "alice");
+dict.set("height", 172);
+console.log(dict);
+
+dict.remove("age");
+console.log(dict);
+
+console.log(dict.has("age"));
+console.log(dict.has("name"));
+console.log(dict.get("age"));
+console.log(dict.get("name"));
+
+console.log(dict.keys());
+console.log(dict.values());
+dict.each(printDictionary);
