@@ -18,6 +18,10 @@ body {
   overflow-x: hidden;
 }
 
+.displayNone {
+  display: none;
+}
+
 /* header */
 header {
   background-color: #fff;
@@ -154,6 +158,62 @@ header {
   width: 100vw;
 }
 
+/* subHead */
+.subHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10%;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.subHead .processBar ul {
+  display: flex;
+  margin: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  list-style-type: none;
+}
+
+.subHead .processBar li {
+  border: none;
+  padding: 0 15px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.subHead .processBar button {
+  font-size: 0.75rem;
+  cursor: pointer;
+  border: none;
+  background-color: #fff;
+}
+
+.subHead .processBar button:hover {
+  color: #267c8a;
+}
+
+.subHead .processBar .nextIcon {
+  border: none;
+  padding: 0;
+  font-size: 0.85rem;
+}
+
+.subHead .processBar .here {
+  font-weight: 600;
+  color: #267c8a;
+}
+
+.subHead .processBar li:last-child {
+  cursor: default;
+}
+
+.subHead .processBar li:hover a {
+  color: #267c8a;
+}
+
+/* mainContents */
+
 .contents {
   display: flex;
   position: relative;
@@ -164,7 +224,7 @@ header {
 /* left sidebar */
 .contents .sidebar {
   min-width: 180px;
-  width: 12%;
+  width: 13%;
   height: 100%;
   background: #fff;
   padding: 10px 0;
@@ -172,9 +232,17 @@ header {
 }
 
 .contents .sidebar .sideTitle {
-  text-transform: uppercase;
+  text-transform: capitalize;
   text-align: center;
   padding-top: 15px;
+}
+
+.contents .sidebar .sideTitle h3 {
+  margin: 0;
+  text-transform: capitalize;
+  text-align: center;
+  padding-top: 15px;
+  font-weight: 500;
 }
 
 .contents .sidebar ul li {
@@ -199,15 +267,80 @@ header {
 /* right sidebar */
 
 /* notices */
+.contents .sidebar.right .sideTitle {
+  padding: 15px;
+  font-weight: 600;
+}
+.contents .sidebar.right .noticeContent {
+  display: flex;
+  padding: 10px 0;
+  border-bottom: 0.5px solid #eaeaea;
+}
+
+.contents .sidebar.right .noticeContent.first {
+  border-top: 1px solid #eaeaea;
+}
+
+.contents .sidebar.right .noticeContent .noticeImage {
+  position: relative;
+  width: 20%;
+}
+
+.contents .sidebar.right .noticeContent .noticeImage img {
+  position: absolute;
+  top: 45%;
+  transform: translateY(-50%);
+  width: 50px;
+}
+
+.contents .sidebar.right .noticeContent .noticeText {
+  font-size: 0.7rem;
+  margin-left: 20px;
+  width: 70%;
+}
+
+.contents .sidebar.right .noticeContent .noticeText p {
+  margin: 0;
+  margin-bottom: 10px;
+  font-weight: 530;
+}
+
+.contents .sidebar.right .noticeContent .noticeText span {
+  cursor: pointer;
+}
+
+.contents .sidebar.right .noticeContent .noticeText span a:hover {
+  color: #267c8a;
+}
+
+.contents .sidebar.right .noticeSidebar .noticeButton {
+  text-align: center;
+  padding: 10px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.contents .sidebar.right .noticeSidebar .noticeButton {
+  padding: 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.contents .sidebar.right .noticeSidebar .noticeButton:hover {
+  background-color: #e1f4f7;
+}
+
+.contents .sidebar.right .noticeSidebar .noticeButton:active {
+  transform: scale(0.98);
+}
 
 /* useful links */
 .contents .sidebar.right {
   margin-left: 50px;
 }
 
-.contents .sidebar.right .sideTitle {
-  padding: 15px;
+.contents .sidebar.right .sideTitle.second {
   margin-top: 10px;
+  padding: 15px;
 }
 
 .contents .sidebar.right ul {
@@ -303,4 +436,57 @@ main .mainContents .content p:before {
   position: absolute;
   left: -10000000000px;
   text-indent: -1000000000px;
+}
+
+/* footer */
+footer {
+  width: 100%;
+  border-top: 1px solid #eaeaea;
+  padding: 0 10%;
+}
+
+footer .footWrapper {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin: 20px;
+}
+
+footer .bar p {
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+footer .bar ul {
+  display: flex;
+  margin: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  list-style-type: none;
+}
+
+footer .bar li {
+  border: none;
+  padding: 0 15px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+footer .bar .nextIcon {
+  border: none;
+  padding: 0;
+  font-size: 0.85rem;
+}
+
+footer .bar .here {
+  font-weight: 600;
+  color: #267c8a;
+}
+
+footer .bar li:last-child {
+  cursor: default;
+}
+
+footer .bar li:hover a {
+  color: #267c8a;
 }
