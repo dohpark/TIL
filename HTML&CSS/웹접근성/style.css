@@ -163,21 +163,23 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 10%;
+  padding: 0 7%;
   border-bottom: 1px solid #eaeaea;
+  flex-wrap: nowrap;
 }
 
 .subHead .processBar ul {
   display: flex;
   margin: 10px;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   list-style-type: none;
+  padding: 0;
 }
 
 .subHead .processBar li {
   border: none;
-  padding: 0 15px;
+  padding: 0 10px;
   font-size: 0.85rem;
   cursor: pointer;
 }
