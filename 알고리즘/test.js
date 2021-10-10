@@ -1,119 +1,94 @@
-/* 최소힙 (MinHeap) */
-// Heap(): 배열 내 요소를 저장하기 위한 생성자
-function Heap() {
-  this.items = [];
+// TrieNode(): 문자 노드와 끝 단어 표시를 위한 노드 생성자
+function TrieNode() {
+  this.children = {}; // key: 문자, value: TrieNode
+  this.endOfWord = false; // 단어 여부
 }
 
-// swap(): 배열 내 두 요소 위치를 변경
-Heap.prototype.swap = function (index1, index2) {
-  let tmp = this.items[index1];
-  this.items[index1] = this.items[index2];
-  this.items[index2] = tmp;
-};
+// Trie(): 루트 노드 저장을 위한 생성자
+function Trie() {
+  this.root = new TrieNode();
+}
 
-// parentIndex(): 부모 노드의 위치 반환
-Heap.prototype.parentIndex = function (index) {
-  return Math.floor((index - 1) / 2);
-};
+// insert(): 문자열 추가
+Trie.prototype.insert = function (word) {
+  let current = this.root; // root부터 시작
 
-// leftChildIndex(): 왼쪽 자식 노드의 위치 반환
-Heap.prototype.leftChildIndex = function (index) {
-  return index * 2 + 1;
-};
+  for (let i = 0; i < word.length; i++) {
+    let ch = word[i]; // 각 character 하나씩 검색할 예정
+    let node = current.children[ch]; // 해당 character을 키로 지닌 child 노드를 찾음
 
-// rightChildIndex(): 오른쪽 자식 노드의 위치 반환
-Heap.prototype.rightChildIndex = function (index) {
-  return index * 2 + 2;
-};
-
-// parent(): 부모 노드의 요소 값 반환
-Heap.prototype.parent = function (index) {
-  return this.items[this.parentIndex(index)];
-};
-
-// leftChild(): 왼쪽 자식 노드의 요소 값 반환
-Heap.prototype.leftChild = function (index) {
-  return this.items[this.leftChildIndex(index)];
-};
-
-// rightChild(): 오른쪽 자식 노드의 요소 값 반환
-Heap.prototype.rightChild = function (index) {
-  return this.items[this.rightChildIndex(index)];
-};
-
-// peek(): 현재 정렬된 최소/최대 요소값 반환
-Heap.prototype.peek = function () {
-  return this.items[0];
-};
-
-// size(): 현재 배열 내 크기 반환
-Heap.prototype.size = function () {
-  return this.items.length;
-};
-
-// insert(): 신규 노드 추가
-Heap.prototype.insert = function (item) {
-  this.items[this.size()] = item; // 가장 마지막 인덱스에 추가
-  this.bubbleUp(); // 노드 위치 정렬
-};
-
-// bubbleUp(): 추가된 노드 위치 정렬
-Heap.prototype.bubbleUp = function () {
-  let index = this.size() - 1;
-  while (this.parent(index) && this.parent(index) < this.items[index]) {
-    this.swap(this.parentIndex(index), index);
-    index = this.parentIndex(index);
-  }
-};
-
-// extract(): root 노드 반환 및 삭제
-Heap.prototype.extract = function () {
-  let item = this.items[0];
-  this.items[0] = this.items[this.size() - 1]; // root과 가장 마지막 인덱스의 값과 swap
-  this.items.pop(); // root 삭제
-  this.bubbleDown(); // 재정렬
-  return item; // 삭제한 root값 반환
-};
-
-// bubbleDown(): 대체된 root 노드 위치를 기준으로 정렬
-Heap.prototype.bubbleDown = function () {
-  let index = 0;
-  while (
-    this.leftChild(index) &&
-    (this.leftChild(index) > this.items[index] ||
-      this.rightChild(index) > this.items[index])
-  ) {
-    let childIndex = this.leftChildIndex(index);
-    if (
-      this.rightChild(index) &&
-      this.rightChild(index) > this.items[childIndex]
-    ) {
-      childIndex = this.rightChildIndex(index);
+    // 만약 찾는 child 노드가 없으면
+    if (node === undefined) {
+      node = new TrieNode(); // 노드 신규 생성
+      current.children[ch] = node; // 신규 노드를 현재 위치의 child 노드에 저장
     }
 
-    this.swap(childIndex, index);
-    index = childIndex;
+    current = node; // 현재 위치를 해당 child 노드로 진입
   }
+
+  current.endOfWord = true; // 만약 한 단어의 끝이라면 끝이라는 표시를 남김
 };
 
-let maxHeap = new Heap();
+// search(): 문자열 검색
+// insert()과 원리 매우 유사
+Trie.prototype.search = function (word) {
+  let current = this.root;
 
-maxHeap.insert(90);
-maxHeap.insert(15);
-maxHeap.insert(10);
-maxHeap.insert(7);
-maxHeap.insert(12);
-maxHeap.insert(2);
-maxHeap.insert(8);
-maxHeap.insert(3);
-console.log(maxHeap);
+  for (let i = 0; i < word.length; i++) {
+    let ch = word[i];
+    let node = current.children[ch];
 
-console.log(maxHeap.extract());
-console.log(maxHeap);
-console.log(maxHeap.extract());
-console.log(maxHeap.extract());
-console.log(maxHeap.extract());
-console.log(maxHeap.extract());
-console.log(maxHeap.extract());
-console.log(maxHeap.extract());
-console.log(maxHeap.extract());
+    if (node === undefined) {
+      return false; // 만약에 비어 있으면 해당 단어가 없다는 의미로 false 반환
+    }
+
+    current = node;
+  }
+
+  return current.endOfWord;
+};
+// 해당 노드의 children들을 찾으며 타고 내려가 결과적으로 원하는 단어를 찾는 구조
+
+// delete(): 문자열 삭제
+Trie.prototype.delete = function (word, current = this.root, index = 0) {
+  if (index === word.length) {
+    if (!current.endOfWord) return false;
+
+    current.endOfWord = false;
+
+    return Object.keys(current.children).length === 0;
+  }
+
+  let ch = word[index];
+  let node = current.children[ch];
+
+  if (node === undefined) return false;
+
+  let isDeleteNode = this.delete(word, node, index + 1) && !node.endOfWord;
+  if (isDeleteNode) {
+    delete current.children[ch];
+    return Object.keys(current.children).length === 0;
+  }
+
+  return false;
+};
+
+let trie = new Trie();
+
+trie.insert("be");
+trie.insert("bee");
+trie.insert("can");
+trie.insert("cat");
+trie.insert("cd");
+
+console.log(trie.search("bee"));
+trie.delete("bear");
+console.log(trie.search("bee"));
+trie.delete("b");
+console.log(trie.search("bee"));
+trie.delete("bee");
+console.log(trie.search("bee"));
+
+console.log(trie.root.children);
+console.log(trie.root.children["b"]);
+console.log(trie.root.children["b"].children["e"]);
