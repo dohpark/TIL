@@ -1,14 +1,53 @@
 /* 바이러스 */
 
+function Graph() {
+  this.edge = {};
+  this.visited = {};
+}
+
+Graph.prototype.addVertex = function (v) {
+  this.edge[v] = [];
+  this.visited[v] = false;
+};
+
+Graph.prototype.addEdge = function (v1, v2) {
+  this.edge[v2].push(v1);
+  this.edge[v1].push(v2);
+};
+
+Graph.prototype.dfs = function (vertex) {
+  if (this.visited[vertex]) return;
+
+  this.visited[vertex] = true;
+  let neighbors = this.edge[vertex];
+  for (let i = 0; i < neighbors.length; i++) {
+    this.dfs(neighbors[i]);
+  }
+};
+
 /* user code */
 function answer(v, e_list) {
   let result = 0;
 
-  // 코드 구현 시작 영역
+  let g = new Graph();
+  // addVertex: PC 추가
+  for (let i = 1; i <= v; i++) {
+    g.addVertex(i);
+  }
 
-  // …
+  // addEdge: 네트워크 연결(무방향)
+  for (let i = 0; i < e_list.length; i++) {
+    let e = e_list[i];
+    g.addEdge(e[0], e[1]);
+  }
 
-  // 코드 구현 종료 영역
+  // dfs 방문한 pc를 업데이트
+  g.dfs(1);
+
+  // visited[vertex] => 방문(true), 방문x(false)
+  for (let vertex in g.visited) {
+    result += g.visited[vertex] ? 1 : 0;
+  }
 
   return result;
 }
