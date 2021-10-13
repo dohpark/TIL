@@ -36,4 +36,4 @@ const solution = (bridgeLength, weight, truckWeigths) => {
   return time + 1;
 };
 
-console.log(solution(2, 10, [7, 4, 5, 6]));
+console.log(solution(2, 10, [3, 4, 3, 3]));
