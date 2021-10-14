@@ -78,3 +78,31 @@ let insertionSort = function (arr, compare) {
 array = [...init_array];
 selectionSort(array, descending);
 console.log(array); // [ 6, 5, 4, 3, 2, 1 ]
+
+let mergeSort = function (arr, compare) {
+  if (arr.length === 1) return arr; // 각각 요소 1이 될때 재귀 종료
+
+  // 쪼개기
+  let m = (arr.length / 2).toFixed(0); // middle index
+  let left = mergeSort(arr.slice(0, m), compare); // 0~ m-1 index까지 left로 나눈후 mergetSort()함
+  let right = mergeSort(arr.slice(m), compare); // m ~ 마지막 index까지 right로 나눈 후 mergeSort()함
+
+  // 병합하기
+  let i = 0, // left index
+    j = 0, // rigth index
+    k = 0;
+
+  while (i < left.length && j < right.length) {
+    arr[k++] = compare(left[i], right[j]) ? right[j++] : left[i++];
+    console.log(arr, i, j, k);
+  }
+  while (i < left.length) arr[k++] = left[i++];
+  while (j < right.length) arr[k++] = right[j++];
+
+  return arr;
+};
+
+console.log("mergeSort");
+array = [6, 5, 1, 3, 2];
+mergeSort(array, ascending);
+console.log(array); // [ 6, 5, 4, 3, 2, 1 ]
