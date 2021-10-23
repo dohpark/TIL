@@ -67,3 +67,9 @@ graph.addEdge(2, 3, 8);
 
 console.log(graph);
 console.log(graph.kruskal());
+
+let index = costs.findIndex(
+  ([from, to]) =>
+    (connected.has(from) && !connected.has(to)) ||
+    (connected.has(to) && !connected.has(from))
+);
