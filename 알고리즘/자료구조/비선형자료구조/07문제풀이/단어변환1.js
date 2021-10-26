@@ -1,6 +1,5 @@
-function compare(word, words) {
+function compare(word, words, candidates) {
   let count = new Array(words.length).fill(0);
-  let candidates = [];
   for (let i = 0; i < words.length; i++) {
     if (word[0] == words[i][0]) count[i]++;
     if (word[1] == words[i][1]) count[i]++;
@@ -14,29 +13,39 @@ function compare(word, words) {
   return candidates;
 }
 
-function dfs(word, target, words, level, levels) {
-  if (word == target) levels.push(level);
+function bfs(target, words, level, answer, candidates) {
+  while (candidates.length != 0) {
+    let word = candidates.shift();
+    candidates = compare(word, words, candidates);
+    level++;
+  }
 
-  let candidates = compare(word, words);
+  candidates = compare(word, words, candidates);
   if (candidates[0] == undefined) return;
+  if (candidates.includes(target)) {
+    answer.push(++level);
+    return;
+  }
 
   candidates.map((candidate) => {
     let index = words.indexOf(candidate);
     words.splice(index, 1);
-    console.log(candidate, words, level, levels);
-    dfs(candidate, target, words, ++level, levels);
+    console.log(candidate, words, level, answer);
+    bfs(target, words, ++level, answer, candidates);
     words.push(candidate);
     level--;
   });
 
-  return levels;
+  return answer;
 }
 
 function solution(begin, target, words) {
-  let levels = [];
+  let answer = 0;
+  let candidates = [];
+  candidates.push(begin);
   if (!words.includes(target)) return 0;
-  levels = dfs(begin, target, words, 0, levels);
-  return Math.min(...levels);
+  answer = bfs(target, words, 0, answer, candidates);
+  return Math.min(...answer);
 }
 
 console.log(solution("hit", "cog", ["hot", "dot", "dog", "lot", "log", "cog"]));

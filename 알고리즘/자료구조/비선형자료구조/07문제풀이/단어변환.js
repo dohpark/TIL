@@ -1,46 +1,5 @@
 // 프로그래머스 단어변환
 
-function compare(word, words) {
-  let count = new Array(words.length).fill(0);
-  let candidates = [];
-  for (let i = 0; i < words.length; i++) {
-    if (word[0] == words[i][0]) count[i]++;
-    if (word[1] == words[i][1]) count[i]++;
-    if (word[2] == words[i][2]) count[i]++;
-  }
-
-  for (let i = 0; i < count.length; i++) {
-    if (count[i] == 2) candidates.push(words[i]);
-  }
-
-  return candidates;
-}
-
-function dfs(word, target, words, level, levels) {
-  if (word == target) levels.push(level);
-
-  let candidates = compare(word, words);
-  if (candidates[0] == undefined) return;
-
-  candidates.map((candidate) => {
-    let index = words.indexOf(candidate);
-    words.splice(index, 1);
-    console.log(candidate, words, level, levels);
-    dfs(candidate, target, words, ++level, levels);
-    words.push(candidate);
-    level--;
-  });
-
-  return levels;
-}
-
-function solution(begin, target, words) {
-  let levels = [];
-  if (!words.includes(target)) return 0;
-  levels = dfs(begin, target, words, 0, levels);
-  return Math.min(...levels);
-}
-
 // 하나의 알파벳을 제외하고 나머지 단어가 일치하는지 확인하는 함수
 function slicedWord(word, i) {
   const wordToArray = word.split("");
@@ -69,6 +28,7 @@ function dfs(word, index, level, visit, words, target, answers) {
       const visited = new Set([...visit]);
       visited.add(v);
       dfs(v, j, level + 1, visited, words, target, answers);
+      console.log(v, answers, visit, level);
     });
   }
 }
@@ -83,5 +43,3 @@ function solution(begin, target, words) {
 }
 
 console.log(solution("hit", "cog", ["hot", "dot", "dog", "lot", "log", "cog"]));
-
-console.log(compare("hit", ["hot", "dot", "dog", "lot", "log", "cog"]));
