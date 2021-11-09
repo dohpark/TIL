@@ -34,5 +34,29 @@ function solution(s) {
   return answer * 1;
 }
 
+function solution(s) {
+  let numbers = [
+    "zero",
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+  ];
+  var answer = s;
+
+  for (let i = 0; i < numbers.length; i++) {
+    let arr = answer.split(numbers[i]);
+    console.log(arr, numbers[i], answer);
+    answer = arr.join(i);
+  }
+
+  return Number(answer);
+}
+
 console.log(solution("one4seveneight"));
 console.log(solution("23four5six7"));
