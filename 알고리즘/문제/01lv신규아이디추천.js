@@ -18,3 +18,4 @@ function solution(new_id) {
 }
 
 console.log(solution("...!@BaT#*..y.abcdefghijklm"));
+console.log(solution("abcdefghijklmn.p"));
