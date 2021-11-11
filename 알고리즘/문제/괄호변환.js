@@ -1,20 +1,17 @@
 // 프로그래머스 괄호변환 lvl2
 
 function solution(p) {
-  if (p == "") return "";
+  if (!p) return "";
 
-  let [u, v] = split(p);
+  const [u, v] = split(p);
 
   if (isCorrect(u)) {
     let result = solution(v);
     return u + result;
-  } else {
-    let result = solution(v);
-    let emptyStr = `(${result})`;
-    let slice = u.slice(1, u.length - 1);
-    emptyStr += swap(slice);
-    return emptyStr;
   }
+  let slice = u.slice(1, u.length - 1);
+  let emptyStr = `(${solution(v)})${swap(slice)}`;
+  return emptyStr;
 }
 
 function split(str) {
