@@ -24,7 +24,6 @@ function solution(name) {
     }
     leftRightTurns++;
   }
-  console.log(upDownTurns, leftRightTurns);
 
   return upDownTurns + leftRightTurns;
 }
