@@ -23,7 +23,7 @@ console.log(strObject); // String {0: "p", 1: "a", 2: "r", 3: "k", length: 4, [[
 
 - String 객체는 원본 String 래퍼 객체를 직접 변경하는 메서드가 없음
 
-## String.prototype.index
+## String.prototype.indexOf
 
 - Syntax
 
