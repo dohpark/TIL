@@ -349,7 +349,10 @@ myForEach([1, 2, 3], (a, i) => {
 - overload signature은 함수의 파라미터와 리턴타입을 정의하며, 함수 몸체는 없음
 - 함수는 여러개의 overload signature을 가질 수 있음
 - implementation signature은 파라미터 타입, 리턴 타입, 함수 몸체를 지니지만, 한개밖에 존재하지 않음
-- implementation signature은 overload signature의 두가지 방법 모두 수용할 수 있어야함.
+- implementation signature은 overload signature의 방법 모두 수용할 수 있어야함.
+- implement signature은 함수가 어떻게 동작하늕지 구현하지만 직접적으로 호출이 가능하지 않다. overload signature만으로 호출 가능함
+- implement signature과 overload signature은 호환가능해야함
+- 메서드 또한 오버로드할 수 있음
 
 ```typescript
 function makeDate(timestamp: number): Date;
@@ -369,9 +372,9 @@ const d3 = makeDate(1, 3);
 
 - 위의 예시에서 첫번째와 두번째는 오버로드 시그니처임.
 - 세번째가 implementation signature임
-- 오버로드 시그니처는 한개 혹은 세개의 인수를 받을 수 있는데 d3에 할당한 함수호출문은 인수를 두개 지니기에 사용할 수 없음.
+- 오버로드 시그니처는 한개 혹은 세개의 인수를 받을 수 있는데 d3에 할당한 함수호출문은 인수를 두개 지님. 호출은 overload signature을 통해 하는데 오버로드 시그니처와 인수의 개수가 같은 것이 없기에 호출이 불가능함.
 
-### Overload Signatures and the Implementation Signature
+#### Overload Signatures and the Implementation Signature
 
 - 아래의 코드의 에러를 확인해보자
 
@@ -385,30 +388,287 @@ fn();
 // Expected 1 arguments, but got 0.
 ```
 
-- 함수 몸체에 작성된 시그니처는 바깥에서 볼 수가 없음
-- implementation의 시그니처는 바깥에서 볼 수가 없음. 오버로드된 함수를 작성 시에 두개 이상의 시그니처를 함수의 implementation보다 더 많아야함.
 - implementation 시그니처는 overload 시그니처와 호환이 가능해야함. 아래의 예시들은 호환되지 않기에 에러가 발생함
 
 ```typescript
 function fn(x: boolean): void;
 // Argument type isn't right
-function fn(x: string): void; // 에러. 아규먼트의 타입이 맞지 않아 호환되지 않음
+function fn(x: string): void; // 에러. 위 오버로드 시그니처는 구현 시그니처와 호환되지 않음.
 // This overload signature is not compatible with its implementation signature.
-function fn(x: boolean) {} // 에러 업ㅂㅅ음
+function fn(x: boolean) {}
 ```
 
 ```typescript
 function fn(x: string): string;
 // Return type isn't right
-function fn(x: number): boolean; // 에러. 반환값의 타입이 맞지 않아 호환되지 않음
+function fn(x: number): boolean; // 에러. 위 오버로드 시그니처는 implementation 시그니처와 호환되지 않음
 // This overload signature is not compatible with its implementation signature.
 function fn(x: string | number) {
   return "oops";
-} // 에러 없음
+}
 ```
 
---- breakline ---
+#### Writing Good Overloads
 
 ```typescript
+function len(s: string): number;
+function len(arr: any[]): number;
+function len(x: any) {
+  return x.length;
+}
 
+len(""); // OK
+len([0]); // OK
+len(Math.random() > 0.5 ? "hello" : [0]);
+// No overload matches this call.
+//   Overload 1 of 2, '(s: string): number', gave the following error.
+//     Argument of type 'number[] | "hello"' is not assignable to parameter of type 'string'.
+//       Type 'number[]' is not assignable to type 'string'.
+//   Overload 2 of 2, '(arr: any[]): number', gave the following error.
+//     Argument of type 'number[] | "hello"' is not assignable to parameter of type 'any[]'.
+//       Type 'string' is not assignable to type 'any[]'.
 ```
+
+- 위의 예시는 함수 오버로드를 사용하지 않는 방법이 더 간결하고 효과적으로 표현할 수 있음
+- 아래와 같이 유니온을 사용하여 더 간결하게 표현할 수 있음
+- 가능하면 오버로드보다는 유니온 타입을 쓴 파라미터 사용을 권장함
+
+```typescript
+function len(x: any[] | string) {
+  return x.length;
+}
+```
+
+### Declaring this in a Function
+
+- 타입스크립트는 코드의 흐름을 분석하여 this가 무엇일지 추론할 수 있음
+- 그러나 파라미터에 this를 작성한다면 무슨 타입인지 선언해야함
+
+```typescript
+interface DB {
+  filterUsers(filter: (this: User) => boolean): User[];
+}
+
+const db = getDB();
+const admins = db.filterUsers(function (this: User) {
+  return this.admin;
+});
+```
+
+- 이는 콜백 스타일의 API에서 흔하게 사용되는 패턴임. 화살표 함수는 이의 경우 사용할 수 없음. (화살표함수한테는 this가 없기 때문에 상위의 this를 상속받기 때문)
+
+```typescript
+interface DB {
+  filterUsers(filter: (this: User) => boolean): User[];
+}
+
+const db = getDB();
+const admins = db.filterUsers(() => this.admin);
+// The containing arrow function captures the global value of 'this'.
+// Element implicitly has an 'any' type because type 'typeof globalThis' has no index signature.
+```
+
+### 그 외에 알아야 할 타입
+
+#### void
+
+- void는 값을 반환하지 않는 함수를 나타냄. 함수에 반환문이 없거나 반환문에 명시적으로 값을 반환하지 않는 경우를 나타냄
+
+```typescript
+// The inferred return type is void
+function noop() {
+  return;
+}
+```
+
+- 값을 반환하지 않으면 함수는 암묵적으로 undefined를 반환함. 그러나 void와 undefined는 같은 것이 아님
+
+#### object
+
+- object는 원시값이 아닌 것들을 일컬음
+- object는 empty object 타입 {}과 다르며, 글로벌 객체 Object와도 다름
+
+#### unknown
+
+- unknown은 any 타입과 유사하지만 다름
+- unknown 타입의 값으로는 아무거나 할 수는 없음
+
+```typescript
+function f1(a: any) {
+  a.b(); // OK
+}
+function f2(a: unknown) {
+  a.b();
+Object is of type 'unknown'.
+}
+```
+
+- 이는 함수 타입을 설명할 때 매우 효과적임 왜냐하면 개발자는 any 타입을 사용하지 않으면서 아무 타입의 값을 사용할 수 있기 때문임
+
+```typescript
+function safeParse(s: string): unknown {
+  return JSON.parse(s);
+}
+
+// Need to be careful with 'obj'!
+const obj = safeParse(someRandomString);
+```
+
+#### never
+
+- 어떤 함수들은 절대로 값을 반환하지 않음
+
+```typescript
+function fail(msg: string): never {
+  throw new Error(msg);
+}
+```
+
+- never 타입은 관측되지 않는 타입을 나타냄. 리턴의 타입에 사용된다면, 이는 함수가 예외를 발생시키거나 프로그램 실행의 종료를 나타냄
+- never은 유니언에서 남아있는 타입이 없을 때에도 쓰임
+
+```typescript
+function fn(x: string | number) {
+  if (typeof x === "string") {
+    // do something
+  } else if (typeof x === "number") {
+    // do something else
+  } else {
+    x; // has type 'never'!
+  }
+}
+```
+
+#### Function
+
+- Function 객체는 bind, call, apply 등의 프로퍼티를 지니며 함수가 함수로 동작할 수 있도록 함.
+- 또한 타입이 Function인 값들이 호출될 수 있도록 하는 특별한 속성이 있음. 이러한 호출은 any타입을 반환함.
+- 함수가 호출되면 기본적으로 any를 반환한다는 뜻인듯
+
+```typescript
+function doSomething(f: Function) {
+  return f(1, 2, 3);
+}
+```
+
+- 위의 예시는 untyped function call이라 하는데, return 타입을 any로 반환하기에 사용을 권장하지 않음
+
+### Rest Parameters and Arguments
+
+#### Rest Parameters
+
+- 타입스크립트에서 rest parameters에는 타입표기를 any 대신 any[]로 해야함
+- 타입 표기법으로 Array<T> 또는 T[] 또는 튜플 타입의 형태여야함.
+
+```typescript
+function multiply(n: number, ...m: number[]) {
+  return m.map((x) => n * x);
+}
+// 'a' gets value [10, 20, 30, 40]
+const a = multiply(10, 1, 2, 3, 4);
+```
+
+#### Rest Arguments
+
+- 타입스크립트는 배열이 불별하다고 확신해하지 않음. 이 때문에 아래와 같은 문제가 생길 수 있음
+
+```typescript
+// Inferred type is number[] -- "an array with zero or more numbers",
+// not specifically two numbers
+const args = [8, 5];
+const angle = Math.atan2(...args);
+// A spread argument must either have a tuple type or be passed to a rest parameter.
+```
+
+- 위의 문제는 다양한 방법으로 고칠 수 있지만 대체적으로 const를 활용하여 쉽게 고칠 수 있음
+
+```typescript
+// Inferred as 2-length tuple
+const args = [8, 5] as const;
+// OK
+const angle = Math.atan2(...args);
+```
+
+- rest arguments를 사용하기 위해서는 downlevelIteration을 켜야 사용 가능할 수도 있음
+
+### Parameter Destructuring
+
+- 타입스크립트 구조분해의 타입 표기는 object 다음에 작성하면 됨
+
+```typescript
+function sum({ a, b, c }: { a: number; b: number; c: number }) {
+  console.log(a + b + c);
+}
+```
+
+- 이렇게 작성해도 됨
+
+```typescript
+// Same as prior example
+type ABC = { a: number; b: number; c: number };
+function sum({ a, b, c }: ABC) {
+  console.log(a + b + c);
+}
+```
+
+### Assignability of Functions
+
+#### Return type void
+
+- void 반환 타입은 함수가 반환을 하지 못하도록 강제하지 않음.
+- 사용 시 아무 타입의 리턴값을 반환이 실행되지만 무시될 것임.
+- (근데 아래의 f1, f2, f3 함수 실행해보니깐 잘만 반환함. 타입스크립트는 무시해도 자바스크립트는 그냥 실행시키는 느낌임. 내가 영어 잘못 이해한걸수도)
+- 아래의 함수와 같이 리턴타입이 void이어도 반환문을 작성할 수 있음
+
+```typescript
+type voidFunc = () => void;
+
+const f1: voidFunc = () => {
+  return true;
+};
+
+const f2: voidFunc = () => true;
+
+const f3: voidFunc = function () {
+  return true;
+};
+```
+
+- 이러한 함수를 변수에 할당하면, 해당 변수는 void 타입을 지닐 것임
+
+```typescript
+const v1 = f1(); // 마우스로 v1에 대면 v1은 void 타입이라고 나옴
+
+const v2 = f2();
+
+const v3 = f3();
+```
+
+- 이런 동작이 존재하는 이유를 알기 위해 아래의 예시를 보자.
+- Array.prototype.forEach 메서드의 반환타입이 void이지만 Array.prototype.push가 숫자를 반환하기 위해서는 이와 같은 설계가 필요함
+
+```typescript
+const src = [1, 2, 3];
+const dst = [0];
+
+src.forEach((el) => dst.push(el));
+```
+
+- 단 리터럴 함수의 반환 타입이 void면 해당 함수는 리턴을 그 무엇도 해서는 안됨
+
+```typescript
+function f2(): void {
+  // @ts-expect-error
+  return true;
+}
+
+const f3 = function (): void {
+  // @ts-expect-error
+  return true;
+};
+```
+
+- void에 대한 더 많은 정보를 얻고 싶다면 아래에서 확인
+  - [v1 handbook](https://www.typescriptlang.org/docs/handbook/basic-types.html#void)
+  - [v2 handbook](https://www.typescriptlang.org/docs/handbook/2/functions.html#void)
+  - [FAQ - "Why are functions returning non-void assignable to function returning void?"](https://github.com/Microsoft/TypeScript/wiki/FAQ#why-are-functions-returning-non-void-assignable-to-function-returning-void)
