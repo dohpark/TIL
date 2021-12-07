@@ -189,8 +189,92 @@ console.log(stringNumeric.add(stringNumeric.zeroValue, "test"));
 
 ### Generic Constraints
 
---- breakline ---
+```typescript
+function loggingIdentity<Type>(arg: Type): Type {
+  console.log(arg.length); // 에러
+  // Property 'length' does not exist on type 'Type'.
+  return arg;
+}
+```
+
+- 위의 예시에서 Type으로 모든 type을 받을 수 있기에 .length 프로퍼티가 없는 타입들도 고려하여 .length 사용하면 에러가 남.
+- 함수내부에 .length를 사용하기 위해서 Type에 제약을 거는 방법이 있음
+- 아래의 예시는 Type가 length 프로퍼티가 있는 타입들을 extend하도록 하여 Type에 제약을 걸었음
 
 ```typescript
+interface Lengthwise {
+  length: number;
+}
 
+function loggingIdentity<Type extends Lengthwise>(arg: Type): Type {
+  console.log(arg.length); // Now we know it has a .length property, so no more error
+  return arg;
+}
 ```
+
+- 이제 제네릭 함수에 제약이 있기에 아무 타입들에 동작하지 않음
+
+```typescript
+loggingIdentity(3); // 에러
+// Argument of type 'number' is not assignable to parameter of type 'Lengthwise'.
+```
+
+### Using Type Parameters in Generic Constraints
+
+- 다른 파라미터로 제약된 타입 파라미터를 선언할 수 있음
+- 아래의 예시는 두 타입간의 관계성으로 제약을 주어 key가 obj의 프로퍼티 키가 되도록 제약함
+
+```typescript
+function getProperty<Type, Key extends keyof Type>(obj: Type, key: Key) {
+  return obj[key];
+}
+
+let x = { a: 1, b: 2, c: 3, d: 4 };
+
+getProperty(x, "a"); // ok
+getProperty(x, "m"); // 에러
+// Argument of type '"m"' is not assignable to parameter of type '"a" | "b" | "c" | "d"'.
+```
+
+### Using Class Types in Generics
+
+- 타입스크립트에서 제네릭을 사용하여 팩토리를 생성할 때, 생성자 함수를 통해 클래스 타입에 참조해야함
+
+```typescript
+function create<Type>(c: { new (): Type }): Type {
+  return new c();
+}
+```
+
+- 아래의 예시는 prototype 프로퍼티를 사용하여 생성자 함수와 클래스 타입의 인스턴스 사이의 관계를 유추하고 제한함
+
+```typescript
+class BeeKeeper {
+  hasMask: boolean = true;
+}
+
+class ZooKeeper {
+  nametag: string = "Mikle";
+}
+
+class Animal {
+  numLegs: number = 4;
+}
+
+class Bee extends Animal {
+  keeper: BeeKeeper = new BeeKeeper();
+}
+
+class Lion extends Animal {
+  keeper: ZooKeeper = new ZooKeeper();
+}
+
+function createInstance<A extends Animal>(c: new () => A): A {
+  return new c();
+}
+
+createInstance(Lion).keeper.nametag; // Mikle
+createInstance(Bee).keeper.hasMask; // true
+```
+
+- 이 패턴은 mixins 디자인 패턴에 사용됨
