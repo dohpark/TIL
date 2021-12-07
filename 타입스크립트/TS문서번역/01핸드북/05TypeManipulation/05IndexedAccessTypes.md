@@ -57,5 +57,12 @@ type Age2 = Person["age"];
 - 대신 타입 별칭으로 이와 유사한 스타일의 리펙터를 할 수 있음
 
 ```typescript
+const key = "age";
+type Age = Person[key]; // 에러
+// Type 'key' cannot be used as an index type.
+// 'key' refers to a value, but is being used as a type here. Did you mean 'typeof key'?
 
+// 유사한 스타일
+type key = "age";
+type Age = Person[key];
 ```
