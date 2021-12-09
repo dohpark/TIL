@@ -229,6 +229,98 @@ class MyClass {
 
 - 인덱스 시그니처 타입은 메서드의 타입들을 캡쳐해야하기에, 활용하기 매우 어려움. 일반적으로 클래스 인스턴스보다는 다른 곳에 인덱싱한 데이터를 보관하는 것을 더 권장함.
 
+### Classs Heritage
+
+- 다른 객체지향 언어들과 같이 자바스크립트의 클래스는 상속 받을 수 있음
+
+#### implements Clauses
+
+- implement 절을 통해 클래스가 특쩡한 인터페이스에 만족하는지 체크할 수 있음. 만약에 클래스가 정확히 구현 못하면 에러가 날 것임
+
+```typescript
+interface Pingable {
+  ping(): void;
+}
+
+class Sonar implements Pingable {
+  ping() {
+    console.log("ping!");
+  }
+}
+
+class Ball implements Pingable {
+  // Class 'Ball' incorrectly implements interface 'Pingable'.
+  //   Property 'ping' is missing in type 'Ball' but required in type 'Pingable'.
+  pong() {
+    console.log("pong!");
+  }
+}
+```
+
+- 클래스는 여러개의 인터페이스를 implement 할 수 있음. ex. class C implements A, B {}
+
+#### Cautions
+
+- implements 절은 클래스가 인터페이스 타입대로 사용되는지 체크하기 위한 용도임
+- implements는 클래스 또는 클래스의 메서드의 타입을 전혀 바꾸지 않음
+
+```typescript
+interface Checkable {
+  check(name: string): boolean;
+}
+
+class NameChecker implements Checkable {
+  check(s) {
+    // 에러
+    // Parameter 's' implicitly has an 'any' type.
+    // Notice no error here
+    return s.toLowercse() === "ok"; // 에러 없음...!
+  }
+}
+```
+
+- 위 예시에서 s의 타입이 implement에 의해 추론되지 않음을 확인할 수 있음
+- 아래의 예시를 보면 인터페이스를 implement 해도 옵셔널 프로퍼티는 해당 프로퍼티를 생성하지 않음
+
+```typescript
+interface A {
+  x: number;
+  y?: number;
+}
+class C implements A {
+  x = 0;
+}
+const c = new C();
+c.y = 10;
+// Property 'y' does not exist on type 'C'.
+```
+
+#### extends Clauses
+
+- 클래스는 상속받을 수 있음. 상속받은 클래스는 상속한 클래스의 프로퍼티와 메서드를 받으며 추가적으로 멤버들을 정의할 수 있음
+
+```typescript
+class Animal {
+  move() {
+    console.log("Moving along!");
+  }
+}
+
+class Dog extends Animal {
+  woof(times: number) {
+    for (let i = 0; i < times; i++) {
+      console.log("woof!");
+    }
+  }
+}
+
+const d = new Dog();
+// Base class method
+d.move();
+// Derived class method
+d.woof(3);
+```
+
 --- breakline ---
 
 ```typescript
