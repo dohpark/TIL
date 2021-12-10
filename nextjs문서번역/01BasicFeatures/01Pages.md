@@ -25,6 +25,18 @@
 - Static Generation으로 생성한 페이지는 추가적 설정 없이 CDN을 통해 캐싱할 수 있음 (성능이 좋아짐). 그러나 가끔은 Server-side Rendering이 유일한 옵션이 될 수도 있음
 - Client-side Rendering을 Static Generation 또는 Server-side Rendering과 같이 사용할 수도 있음. 이는 어떤 페이지는 완전히 클라이언트 사이드 자바스크립트에 의해 렌더링 될 수 있음. 이와 관련하여 더 보고 싶다면 Data Fetching documentation 참조부탁
 
+## 빌드 타임이란...?
+
+출처: https://www.reddit.com/r/nextjs/comments/j3za9y/what_exactly_does_build_time_mean/
+
+There are two basic times when it comes to Next.js: build time and request time.
+<br>
+Request time is when a user requests a page. They visit your site and request the appropriate data.
+<br>
+Build time is when you deploy your site. Next goes through your dev code and creates static pages and lambdas for dynamic pages. When you're using getStaticProps it's because you expect your page to be static; the data the page uses isn't going to change between between build time and request time. A blog post is a good example of that sort of data. The content of a blog post isn't likely to change after build time, so that data can come in as a static prop. The page is rendered only once and is served to every user who requests it.
+<br>
+If you do expect your data to change, say if you're displaying stock quotes, you should use getServerSideProps. That way, at request time, Next will fetch the data and render an up-to-date page.
+
 ## Static Generation (권장)
 
 - Static Generation을 사용하면 페이지 HTML은 빌드 타임 때 생성됨. 이 뜻은 프로덕션 때 `next build`로 실행하면 페이지 HTML이 생성함. 이 HTML은 각 요청마다 재사용되며, CDN을 통해 캐싱됨.
@@ -165,3 +177,28 @@ export default Post;
   - Server-Side Rendering 활용하기: Next.js는 각 요청마다 페이지를 pre-render함. 해당 페이지는 CDN을 통해 캐싱되지 않아 느리겠지만, 항상 최신 업데이트를 유지할 것임.
 
 ## Server-side Rendering
+
+- SSR 또는 Dynamic Rendering으로도 불려짐
+- 페이지가 Server-side Rendering을 사용한다면 페이지 HTML은 매 요청마다 생성됨.
+- Server-Side Rendering을 사용하기 위해서는 `getServerSideProps`라는 async 함수를 export 해야함. 이 함수는 매 요청마다 서버에 의해 호출됨
+- 예를 들어 해당 페이지가 자주 업데이트되는 데이터(외부 API에서 fetch 되는)가 필요하다고 하면, `getServerSideProps`로 해당 데이터를 fetch하여 Page에 전달할 수 있음. (아래 예시 참고)
+
+```javascript
+function Page({ data }) {
+  // Render data...
+}
+
+// This gets called on every request
+export async function getServerSideProps() {
+  // Fetch data from external API
+  const res = await fetch(`https://.../data`);
+  const data = await res.json();
+
+  // Pass data to the page via props
+  return { props: { data } };
+}
+
+export default Page;
+```
+
+- `getServerSideProps`는 `getStaticProps`와 유사해 보이지만, 다른점은 `getServerSideProps`은 빌드타임이 아닌 매 요청마다 동작한다는 점임.
