@@ -64,7 +64,7 @@
 - ex. https://www.google.com:443/search?q=hello&hl=ko
 - 웹브라우저는 구글서버를 찾기 위해 dns 서버를 조회하여 ip주소를 구함. ip 정보 등을 바탕으로 http 요청 메시지를 생성함. http 요청 메시지는 아래와 같이 생길 것임 (생략버전)
 
-```
+```http 요청 메시지
 GET /search?q=hello&hl=ko HTTP/1.1
 Host: www.google.com
 ```
