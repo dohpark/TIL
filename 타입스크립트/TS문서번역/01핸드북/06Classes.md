@@ -562,6 +562,138 @@ const MyHelperObject = {
 
 ### static Blocks in Classes
 
+- static 블록을 사용하면 포함하는 클래스 내의 개인 필드에 액세스할 수 있는 자체 범위가 있는 일련의 명령문을 작성할 수 있음.
+- 이는 변수 누출이 없고, 클래스 내부에 대한 완전한 접근을 가진 초기화 코드를 작성할 수 있다는 것을 의미함.
+
+```typescript
+class Foo {
+  static #count = 0;
+
+  get count() {
+    return Foo.#count;
+  }
+
+  static {
+    try {
+      const lastInstances = loadLastInstances();
+      Foo.#count += lastInstances.length;
+    } catch {}
+  }
+}
+```
+
+### Generic Classes
+
+- 인터페이스와 마찬가지로 클래스는 제네릭일 수 있음. 제네릭 클래스가 new로 인스턴스화되면 해당 유형 매개변수는 함수 호출에서와 같은 방식으로 유추됨.
+
+```typescript
+class Box<Type> {
+  contents: Type;
+  constructor(value: Type) {
+    this.contents = value;
+  }
+}
+
+const b = new Box("hello!");
+// const b: Box<string>
+```
+
+#### Type Parameters in Static Members
+
+- 아래의 코드는 문법상 올바르지 않음
+
+```typescript
+class Box<Type> {
+  static defaultValue: Type;
+  // Static members cannot reference class type parameters.
+}
+```
+
+- 런타임 내에서는 오직 하나의 Box.defaultValue 프로퍼티 슬롯이 있음. 따라서 `Box<string>.defaultValue`로 setting을 하면 `Box<number>.defaultValue`도 바꾸게 됨. 제네릭 클래스의 static 멤버는 클래스의 타입 파라미터에 따라 참조될 수 없음.
+
+### this at Runtime in Classes
+
+- 자바스크립트에서 this는 어떻게 호출되느냐에 따라 달라짐.
+- 이에 따라 원하지 않은 방법으로의 this 사용을 제한할 수 있음
+
+#### Arrow Functions
+
+- this 컨텍스트를 잃는 방식으로 자주 호출되는 함수가 있는 경우 메서드 정의 대신 화살표 함수 속성을 사용하는 것이 합리적일 수 있음
+
+```typescript
+class MyClass {
+  name = "MyClass";
+  getName = () => {
+    return this.name;
+  };
+}
+const c = new MyClass();
+const g = c.getName;
+// Prints "MyClass" instead of crashing
+console.log(g());
+```
+
+- 여기에는 몇가지 장단점이 있음
+  - this 값은 TypeScript로 확인하지 않은 코드의 경우에도 런타임 시 정확함을 보장함
+  - 이렇게 하면 각 클래스 인스턴스가 이러한 방식으로 정의된 각 함수의 고유한 복사본을 갖기 때문에 더 많은 메모리를 사용함.
+  - 상속받은 클래스에서는 super.getName을 사용할 수 없음. 프로토타입 체인에 베이스 클래스 메서드를 가져올 entry가 없기 때문임
+
+#### this parameters
+
+- 메서드 또는 함수 정의에서 this라는 초기 매개변수는 TypeScript에서 특별한 의미를 가짐. 해당 매개변수는 컴파일 중에 삭제됨
+
+```typescript
+// TypeScript input with 'this' parameter
+function fn(this: SomeType, x: number) {
+  /* ... */
+}
+```
+
+```javascript
+// JavaScript output
+function fn(x) {
+  /* ... */
+}
+```
+
+- TypeScript는 this 매개변수를 사용하여 함수를 호출하는 것이 올바른 컨텍스트에서 수행되는지 확인함.
+- 화살표 함수를 사용하는 대신 메서드 정의에 this 매개변수를 추가하여 메서드가 올바르게 호출되도록 정적으로 강제할 수 있습니다.
+
+```typescript
+class MyClass {
+  name = "MyClass";
+  getName(this: MyClass) {
+    return this.name;
+  }
+}
+const c = new MyClass();
+// OK
+c.getName();
+
+// Error, would crash
+const g = c.getName;
+console.log(g());
+// The 'this' context of type 'void' is not assignable to method's 'this' of type 'MyClass'.
+```
+
+- 이 방법은 화살표 함수의 장단점과 반대로 지님
+
+### this Types
+
+- 클래스에서 this라는 특수한 타입은 현재 클래스의 타입을 동적으로 참조함.
+
+```typescript
+class Box {
+  contents: string = "";
+  set(value: string) {
+    // (method) Box.set(value: string): this
+
+    this.contents = value;
+    return this;
+  }
+}
+```
+
 --- breakline ---
 
 ```typescript
