@@ -694,8 +694,230 @@ class Box {
 }
 ```
 
---- breakline ---
+- 위 예시에서 TypeScript는 set의 반환 유형을 Box가 아닌 this로 유추했음.
+- Box를 상속받는 클래스를 만들어 보면...
 
 ```typescript
+class ClearableBox extends Box {
+  clear() {
+    this.contents = "";
+  }
+}
 
+const a = new ClearableBox();
+const b = a.set("hello");
+// const b: ClearableBox
+```
+
+- this를 파라미터 타입 표기에 사용할 수도 있음
+
+```typescript
+class Box {
+  content: string = "";
+  sameAs(other: this) {
+    return other.content === this.content;
+  }
+}
+```
+
+- 이것은 other: Box를 작성하는 것과 다름.
+- 상속받은 클래스가 있는 경우 sameAs 메서드는 이제 동일한 상속받은 클래스의 다른 인스턴스만 허용함
+
+```typescript
+class Box {
+  content: string = "";
+  sameAs(other: this) {
+    return other.content === this.content;
+  }
+}
+
+class DerivedBox extends Box {
+  otherContent: string = "?";
+}
+
+const base = new Box();
+const derived = new DerivedBox();
+derived.sameAs(base); // 에러. base를 할당하면 에러가 남
+// Argument of type 'Box' is not assignable to parameter of type 'DerivedBox'.
+//   Property 'otherContent' is missing in type 'Box' but required in type 'DerivedBox'.
+```
+
+#### this - based type guards
+
+- this is Type 형식으로 클래스 또는 인터페이스 내의 메서드의 반환 포지션에 사용할 수 있음.
+- 타입 좁히기와 사용하면 타깃 객체의 타입을 좀 더 구체적으로 좁힐 수 있음
+
+```typescript
+class FileSystemObject {
+  isFile(): this is FileRep {
+    return this instanceof FileRep;
+  }
+  isDirectory(): this is Directory {
+    return this instanceof Directory;
+  }
+  isNetworked(): this is Networked & this {
+    return this.networked;
+  }
+  constructor(public path: string, private networked: boolean) {}
+}
+
+class FileRep extends FileSystemObject {
+  constructor(path: string, public content: string) {
+    super(path, false);
+  }
+}
+
+class Directory extends FileSystemObject {
+  children: FileSystemObject[];
+}
+
+interface Networked {
+  host: string;
+}
+
+const fso: FileSystemObject = new FileRep("foo/bar.txt", "foo");
+
+if (fso.isFile()) {
+  fso.content;
+  // const fso: FileRep;
+} else if (fso.isDirectory()) {
+  fso.children;
+  // const fso: Directory;
+} else if (fso.isNetworked()) {
+  fso.host;
+  // const fso: Networked & FileSystemObject
+}
+```
+
+### Parameter Properties
+
+- 타입스크립트는 생성자 파라미터를 같은 이름과 값의 클래스 프로퍼티로 변환 할 수 있는 문법을 지님.
+- 파라미터 프로퍼티로 불리며 접두사 앞에 public, private, protected 또는 readonly를 붙이면 됨
+
+```typescript
+class Params {
+  constructor(
+    public readonly x: number,
+    protected y: number,
+    private z: number
+  ) {
+    // No body necessary
+  }
+}
+const a = new Params(1, 2, 3);
+console.log(a.x);
+// (property) Params.x: number
+
+console.log(a.z); // 에러
+// Property 'z' is private and only accessible within class 'Params'.
+```
+
+### Class Expressions
+
+- 클래스 표현식은 클래스 선언문과 삐슷함.
+- 유일한 다른점은 클래스 표현식의 경우 이름이 없어도 됨.
+
+```typescript
+const someClass = class<Type> {
+  content: Type;
+  constructor(value: Type) {
+    this.content = value;
+  }
+};
+
+const m = new someClass("Hello, world");
+// const m: someClass<string>
+```
+
+### abstract Classes and Members
+
+- 타입스크립트의 클래스, 메서드, 필드 등은 abstract을 사용 할 수 있음
+
+```typescript
+abstract class Base {
+  abstract getName(): string;
+
+  printName() {
+    console.log("Hello, " + this.getName());
+  }
+}
+
+const b = new Base();
+// Cannot create an instance of an abstract class.
+```
+
+- Base는 abstract이기에 인스턴스화할 수 없음. 하지만 다른 클래스가 상속받도록하여 해당 abstract 멤버들을 구현해야하게 만들 수 있음.
+
+```typescript
+class Derived extends Base {
+  getName() {
+    return "world";
+  }
+}
+
+const d = new Derived();
+d.printName();
+```
+
+- 만약에 하나라도 빼먹으면 에러가 남
+
+```typescript
+class Derived extends Base {
+  // 에러
+  // Non-abstract class 'Derived' does not implement inherited abstract member 'getName' from class 'Base'.
+  // forgot to do anything
+}
+```
+
+### Relationships Between Classes
+
+- 타입스크립트에서 클래스는 구조적으로 비교되어 타입이 같은지 확인됨
+
+```typescript
+class Point1 {
+  x = 0;
+  y = 0;
+}
+
+class Point2 {
+  x = 0;
+  y = 0;
+}
+
+// OK
+const p: Point1 = new Point2();
+```
+
+- 상속이 없어도 클래스 간의 서브타입 관계 또한 존재 가능함
+
+```typescript
+class Person {
+  name: string;
+  age: number;
+}
+
+class Employee {
+  name: string;
+  age: number;
+  salary: number;
+}
+
+// OK
+const p: Person = new Employee();
+```
+
+- 빈 클래스는 멤버가 없음. 구조적 타입 시스템 상 멤버가 없는 타입은 일반적으로 모든 것의 super타입이 될 수 있음.
+- 빈 클래스 사용하지 말라는 뜻임
+
+```typescript
+class Empty {}
+
+function fn(x: Empty) {
+  // can't do anything with 'x', so I won't
+}
+
+// All OK!
+fn(window);
+fn({});
+fn(fn);
 ```
