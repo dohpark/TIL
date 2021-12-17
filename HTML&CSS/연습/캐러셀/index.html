@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>이미지 케러셀</title>
+  <link rel="stylesheet" href="style/style.css">
+</head>
+<body>
+    <section id="carousel">
+      <h1 class="util-in">캐러셀 이미지 리스트</h1>
+      <div class="carousel-cont">
+        <ul class="carousel-list">
+          <li class="carousel-item now">
+            <img src="./images/이미지_1.png" alt="">
+          </li>
+          <li class="carousel-item">
+            <img src="./images/이미지_2.png" alt="">
+          </li>
+          <li class="carousel-item">
+            <img src="./images/이미지_3.png" alt="">
+          </li>
+        </ul>
+      </div>
+      <button type="button" class="prev-btn">&lt; Prev</button>
+      <button type="button" class="next-btn">Next &gt;</button>
+    </section>
+    <form action="" class="image-upload">
+      <input type="file" accept="image/*" id="image-upload-input">
+      <label for="image-upload-input">이미지 업로드</label>
+    </form>
+
+    <script src="./javascript/main.js"></script>
+</body>
+</html>
