@@ -71,7 +71,7 @@
   transition: all 0.5s;
 }
 
-.carousel-item:first-child {
+/* .carousel-item:first-child {
   transform: rotateY(0deg) translateZ(250px);
 }
 
@@ -81,7 +81,7 @@
 
 .carousel-item:nth-child(3) {
   transform: rotateY(240deg) translateZ(250px) rotateY(-240deg);
-}
+} */
 
 .carousel-item > img {
   display: block;
