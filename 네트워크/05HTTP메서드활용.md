@@ -219,6 +219,9 @@
   - 클라이언트가 리소스의 URI를 알고 관리
   - ex. /files
 - 컨트롤러, 컨트롤러 URI
+
   - 문서, 컬렉션, 스토어로 해결하기 어려운 추가 프로세스 실행
   - 동사를 직접 사용
   - ex. /members/{id}/delete
+
+- https://restfulapi.net/resource-naming 참고
