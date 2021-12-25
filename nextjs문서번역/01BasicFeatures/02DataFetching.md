@@ -546,16 +546,113 @@ export async function getServerSideProps(context) {
 
 ### Provided req middleware in getServerSideProps
 
+- getServerSideProps에 전달된 컨텍스트의 req는 들어오는 요청(req)을 파싱하는 빌트인 미들웨어를 제공함.
+- 해당 미들웨어는 다음과 같음
+  - `req.cookies` - 요청으로 전송한 쿠키를 포함하는 객체임. 기본값은 `{}`임.
+
+### Exmaple
+
+- 아래는 getServerSideProps를 활용하여 요청시에 데이터를 fetch하여 pre-render하는 예시임
+
+```javascript
+function Page({ data }) {
+  // Render data...
+}
+
+// This gets called on every request
+export async function getServerSideProps() {
+  // Fetch data from external API
+  const res = await fetch(`https://.../data`);
+  const data = await res.json();
+
+  // Pass data to the page via props
+  return { props: { data } };
+}
+
+export default Page;
+```
+
 ### When should I use getServerSideProps?
 
+- 요청 타임 때 데이터를 무조건 fetch 해야하는 경우 getServerSideProps를 사용할 것을 권장함
+- TTFB(time to first byte)는 getStaticProps보다 느림 왜냐하면 서버는 요청에 대한 결과를 매번 계산해야 하며, 해당 결과는 추가 설정 없이 CDN에서 캐싱할 수 없기 때문임
+- 만약에 데이터를 pre-render할 필요가 없다면 클라이언트 사이드에서 데이터를 fetch하는 방법도 고려할 수 있음
+
 ### TypeScript: Use GetServerSideProps
+
+- 타입스크립트 사용시 `next`에서 `GetServerSideProps`를 사용하면됨
+
+```typescript
+import { GetServerSideProps } from "next";
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  // ...
+};
+```
+
+- props에 inferred 타이핑을 사용하고 싶다면 `InferGetServerSidePropsType<typeof getServerSideProps>`로 사용하면 됨
+
+```typescript
+import { InferGetServerSidePropsType } from 'next'
+
+type Data = { ... }
+
+export const getServerSideProps = async () => {
+  const res = await fetch('https://.../data')
+  const data: Data = await res.json()
+
+  return {
+    props: {
+      data,
+    },
+  }
+}
+
+function Page({ data }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  // will resolve posts to type Data
+}
+
+export default Page
+```
 
 ### Technical details
 
 #### Only runs on server-side
 
+- getServerSideProps는 서버 사이드에서만 실행되며 브라우저에서는 실행하지 않음. 만약에 페잊지에서 getServerSideProps를 사용한다면
+  - 해당 페이지를 직접적으로 요청한다면, getServerSideProps는 request 타임때 실행되며, 해당 페이지는 리턴한 props로 pre-render할 것임
+  - next/link 또는 next/router을 통해 클라이언트 사이드 페이지 전환으로 해당 페이지를 요청하면, Next.js는 서버에 API 요청을 전송하여 getServerSideProps를 실행하도록 함. getServerSideProps를 실행한 결과를 JSON 형식으로 리턴하며, 해당 JSON은 페이지를 렌더링할 때 사용됨.
+  - 이 과정은 Next.js를 통해 자동적으로 실행되므로 getServerSideProps를 정의한 부가적인 일을 하지 않아도 됨
+- 이 [툴](https://next-code-elimination.vercel.app/)을 사용하여 클라이언트 사이드 번들에서 Next.js가 무엇을 없애는지 확인할 수 있음
+
 #### Only allowed in a page
+
+- getServerSideProps는 페이지로만 export될 수 있음.
+- `export async function getServerSideProps() {}` 형식으로 사용해야함. getServerSideProps를 페이지의 컴포넌트의 프로퍼티로 사용하면 동작하지 않음
 
 ## Fetching data on the client side
 
+- 페에지가 지속적으로 업데이트하는 데이터를 포함하고 있다면, 데이터를 pre-render할 필요가 없고 클라이언트 사이드에서 데이터를 fetch하면 됨. 아래와 같이 동작함:
+  - 첫째, 페이지를 데이터 없이 보이게 함. 페이지의 부분은 Static Generation을 통해 pre-render할 수 있음. 부재하는 데이터는 loading 상태로 보이게 하면 됨
+  - 그 다음, 클라이언트 사이드에서 데이터를 fetch 후 준비되면 보이도록 함
+- 위의 접근 방법은 예로 유저 대쉬보드 페이지에 잘 적용됨. 대쉬보드는 프라이빗하고 유저정보 관련 데이터이기에 SEO와 상관이 없으며 pre-render할 필요가 없음. 데이터는 자주 업데이트 되기에 request 타임 데이터 fetch가 필요함
+
 ### SWR
+
+- Next.js 뒤에 있는 팀은 SWR이라는 데이터 가져오기를 위한 React 후크를 만들었음. 클라이언트 측에서 데이터를 가져오는 경우 사용을 적극 권장함. 캐싱, revalidation, focus tracking, 일정한 시간별 refetching 등을 처리함. 그리고 다음과 같이 사용할 수 있음.
+
+```javascript
+import useSWR from "swr";
+
+const fetcher = (url) => fetch(url).then((res) => res.json());
+
+function Profile() {
+  const { data, error } = useSWR("/api/user", fetcher);
+
+  if (error) return <div>failed to load</div>;
+  if (!data) return <div>loading...</div>;
+  return <div>hello {data.name}!</div>;
+}
+```
+
+- [swr 문서 정보는 여기에 확인](https://swr.vercel.app/ko)
