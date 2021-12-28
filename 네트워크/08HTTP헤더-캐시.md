@@ -178,3 +178,93 @@ Content-Length: 34012
 - Cache-Control: 캐시 제어
 - Pragma: 캐시 제어 (하위 호환)
 - Expiers: 캐시 유효 기간 (하위 호환)
+
+## 캐시와 조건부 요청 헤더
+
+- Cache-Control: 캐시 제어
+- Pragma: 캐시 제어 (하위 호환)
+- Expires: 캐시 유효 기간 (하위 호환)
+
+### Cache-Control
+
+- Cache-Control: max-age
+  - 캐시 유효 시간, 초 단위
+- Cache-Control: no-cache
+  - 데이터는 캐시해도 되지만, 항상 원(origin) 서버에 검증하고 사용
+- Cache-Control: no-store
+  - 데이터에 민감한 정보가 있으므로 저장하면 안됨 (메모리에서 사용하고 최대한 빨리 삭제)
+
+### Pragma
+
+- Pragma: no-cache
+- HTTP 1.0 하위 호환
+
+### Expires
+
+- expires: Mon, 01 Jan 1990 00:00:00 GMT
+
+- 캐시 만료일을 정확한 날짜로 지정
+- HTTP 1.0부터 사용
+- 지금은 더 유연한 Cache-Control: max-age 권장
+- Cache-Control: max-age와 함께 사용하면 Expires 무시됨
+
+### 검증 헤더와 조건부 요청 헤더
+
+- 검증 헤더 (Validator)
+  - ETag: "v10", ETag: "asiedk2342def"
+  - Last-Modified: Thu, 04 Jun 2020 07:03:31 GMT
+- 조건부 요청 헤더
+  - If-Match, If-None-Match: ETag 값 사용
+  - If-Modified-Since, If-Unmodified-Since: Last-Modified 값 사용
+
+## 프록시 캐시
+
+- 만약에 한국의 클라이언트가 미국에 있는 원 서버에 데이터를 받아 올려고 하면 응답이 오래 걸리기에 한국 어딘가에 프록시 캐시 서버를 두어 요청 시에 프록시 캐시 서버를 거쳐 오도록 함
+- 첫번째 요청 유저는 프록시 캐시 서버에 저장되어 있지 않는 데이터를 요청하기에 미국에 있는 원서버에서 데이터를 받지만, 그 이후에는 플록시 캐시 서버에 데이터가 저장되기에 그 다음 요청 유저부터는 프록시 캐시 서버에서 바로 데이터를 받을 수 있게 됨
+- 프록시 캐시 서버와 같이 공용으로 사용할 수 있는 캐시를 public 캐시라고 하며, 클라이언트의 웹 브라우저에 저장하는 캐시를 private 캐시라고 함
+
+### Cache-Control
+
+- Cache-Control: public
+  - 응답이 public 캐시에 저장되어도 됨
+- Cache-Control: private
+  - 응답이 해당 사용자만을 위한 것임, private 캐시에 저장해야함 (기본값)
+- Cache-Control: s-maxage
+  - 프록시 캐시에만 적용되는 max-age
+- Age:60 (HTTP 헤더)
+  - 오리진 서버에서 응답 후 프록시 캐시 내에 머문 시간(초)
+
+## 캐시 무효화
+
+- 캐시를 적용 안해도 웹 브라우저가 임의로 캐시를 할 수 있음. 그래서 캐시를 해서는 안되는 자원에는 캐시 안하도록 아래와 같이 확실히 작성해야함
+
+  - Cache-Control: no-cache, no-store, must-revalidate
+  - Pragma: no-cache
+
+- Cachce-Control: no-cache
+  - 데이터는 캐시해도 되지만, 항상 원 서버에 검증하고 사용 (이름에 주의)
+- Cache-Control: no-store
+  - 데이터에 민감한 정보가 있으므로 저장하면 안됨 (메모리에서 사용하고 최대한 빨리 삭제)
+- Cache-Control: must-revalidate
+  - 캐시 만료 후 최초 조회시 원 서버에 검증해야함
+  - 원 서버 접근 실패시 반드시 오류가 발생해야함 = 504 (Gateway Timeout)
+  - must-revalidate는 캐시 유효 시간이라면 캐시를 사용함
+- Pragma: no-cache
+  - HTTP 1.0 하위 호환
+
+### no-cache vs must-revalidate
+
+- no-cache 기본 동작
+
+  1. 웹 브라우저가 프록시 캐시 서버에 요청을 함. no-cache + ETag
+  2. no-cache는 항상 원 서버에 검증하고 사용하도록 해야하므로 원 서버에 요청을 함. no-cache + ETag
+  3. 원 서버는 검증을 함
+  4. 원 서버가 응답 메시지를 보냄
+  5. 프록시 캐시 서버가 클라이언트에 응답 메시지를 보냄
+
+- 만약에 2번 단계에서 프록시 캐시 서버가 원 서버에 접근할 수 없는 경우, 캐시 서버 설정에 따라서 캐시 데이터를 반환할 수 있음
+- no-cache의 경우 원 서버에 접근할 수 없으면 에러를 내기보다는 기존의 오래된 데이터를 보여주는 쪽으로 동작함
+
+- must-revalidate의 경우
+  - 2번 동작에서 원 서버에 접근할 수 없는 경우, 항상 오류가 발생해야함. 504 GateWay Timeout 상태코드와 함께 오류를 발생함
+  - 돈과 같은 통장잔고와 같이 항상 최신의 상태를 받아야하는 경우 사용해야함
