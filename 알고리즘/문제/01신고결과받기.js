@@ -56,6 +56,7 @@ function my_solution(id_list, report, k) {
 
   return answer;
 }
+//
 
 function best_solution(id_list, report, k) {
   let reports = [...new Set(report)].map((a) => {
