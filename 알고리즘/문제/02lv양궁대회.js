@@ -47,6 +47,12 @@ const getScore = (ryanArray, apeachArray) => {
   return [ryanScore, apeachScore];
 };
 
+/**
+ * dfs로 어떻게 할려 했지만 잘 안됨. 문제에서는 최대 차이나는 걸로 구하라고 했지만, 나는 최소 차이로 구함... 문제를 제대로 안읽음.
+ * 현타와서 그냥 다른 사람 풀이 봄...
+ * ㅎㅎ
+ */
+
 function best_solution(n, info) {
   let result = Array.from({ length: 11 }, () => 0);
   let max = 0;
@@ -92,7 +98,7 @@ function best_solution(n, info) {
 
     if (info[10 - idx] > 0) {
       console.log(
-        "info[10-idx] > 0",
+        "info[10-idx]>0",
         peachScore + idx,
         ryanScore,
         count,
@@ -102,7 +108,7 @@ function best_solution(n, info) {
       shot(peachScore + idx, ryanScore, count, idx + 1, scoreBoard);
     } else {
       console.log(
-        "info[10-idx]<0",
+        "info[10-idx]<=0",
         peachScore,
         ryanScore,
         count,
@@ -111,6 +117,8 @@ function best_solution(n, info) {
       );
       shot(peachScore, ryanScore, count, idx + 1, scoreBoard);
     }
+
+    console.log("return");
   }
 
   shot(0, 0, 0, 0, result);
@@ -118,5 +126,13 @@ function best_solution(n, info) {
   if (max <= 0) return [-1];
   else return result;
 }
+/**
+ * idx가 무조건 10이상 찍도록 하게 만들었음
+ * 어떻게 돌아가는지는 이해가 되긴하는데 이걸 내가 만들 자신은 없음
+ *
+ * n>count 조건식을 돌다가 dfs가 끝나가는 타이밍이 있음. dfs가 끝나면 info[10-idx] 관련 조건식이 있는데 이때 보면 idx+1를 함.
+ * 이걸로 [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1]에서 [0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1]로 넘어갈 수 있는거임
+ * 이게 핵심인듯?
+ */
 
 console.log(best_solution(5, [2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0]));
