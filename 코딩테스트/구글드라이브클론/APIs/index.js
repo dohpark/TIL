@@ -1,5 +1,5 @@
 const express = require("express");
-const cors = require('cors');
+const cors = require("cors");
 const path = require("path");
 
 const app = express();
@@ -19,7 +19,7 @@ app.get("/files", (request, response) => {
   }, TIMER);
 });
 
-const baseAssetPath = '/public/images';
+const baseAssetPath = "/public/images";
 
 app.get("/files/:nodeId", (request, response) => {
   const { nodeId } = request.params;

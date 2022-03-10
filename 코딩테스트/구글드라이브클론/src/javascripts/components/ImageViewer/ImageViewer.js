@@ -9,7 +9,7 @@ class ImageViewer {
   static createImageViewer() {
     const imageViewerWrapper = document.createElement("section");
     const imageContent = document.createElement("div");
-    const imageElement = doucment.createElement("img");
+    const imageElement = document.createElement("img");
 
     imageViewerWrapper.classList.add("modal", "image-viewer");
     imageContent.classList.add("content");

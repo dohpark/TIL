@@ -9,6 +9,7 @@ const getClosestElement = (element, selector) => {
   if (evaluate) {
     return element;
   }
+
   return getClosestElement(element.parentElement, selector);
 };
 

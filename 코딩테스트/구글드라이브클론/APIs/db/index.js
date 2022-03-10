@@ -10,7 +10,8 @@ const db = low(adapter);
 db._.mixin(lodashId);
 db._.mixin({
   root: (files) => files.filter((file) => file.parent === null),
-  findChildren: (files, nodeId) => files.filter((file) => file.parent && file.parent.id === nodeId)
+  findChildren: (files, nodeId) =>
+    files.filter((file) => file.parent && file.parent.id === nodeId),
 });
 
 module.exports = {
