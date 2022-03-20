@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .image {
+      display: block;
+      margin-top: 600px;
+      width: 400px;
+      height: 200px;
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+  <img data-img="https://uhdwallpapers.org/uploads/converted/22/03/11/jellyfish-on-the-night-sky-3840x2160_945985-mm-90.jpg" alt="" id="image1" class="image">
+  <img data-img="https://uhdwallpapers.org/uploads/converted/22/03/11/jellyfish-on-the-night-sky-3840x2160_945985-mm-90.jpg" alt="" id="image2" class="image">
+  <img data-img="https://uhdwallpapers.org/uploads/converted/22/03/11/jellyfish-on-the-night-sky-3840x2160_945985-mm-90.jpg" alt="" id="image3" class="image">
+  <img data-img="https://uhdwallpapers.org/uploads/converted/22/03/11/jellyfish-on-the-night-sky-3840x2160_945985-mm-90.jpg" alt="" id="image4" class="image">
+  <img data-img="https://uhdwallpapers.org/uploads/converted/22/03/11/jellyfish-on-the-night-sky-3840x2160_945985-mm-90.jpg" alt="" id="image5" class="image">
+  <img data-img="https://uhdwallpapers.org/uploads/converted/22/03/11/jellyfish-on-the-night-sky-3840x2160_945985-mm-90.jpg" alt="" id="image6" class="image">
+  <script>
+    let options = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.25
+    }
+    let callback = (entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && entry.target.className === 'image') {
+          let imageUrl = entry.target.getAttribute('data-img');
+          if (imageUrl) {
+            entry.target.src = imageUrl;
+            observer.unobserve(entry.target)
+          }
+        }
+      })
+    }
+    let observer = new IntersectionObserver(callback, options)
+    observer.observe(document.querySelector('#image1'));
+    observer.observe(document.querySelector('#image2'));
+    observer.observe(document.querySelector('#image3'));
+    observer.observe(document.querySelector('#image4'));
+    observer.observe(document.querySelector('#image5'));
+    observer.observe(document.querySelector('#image6'));
+    observer.observe(document.querySelector('#image7'));
+  </script>
+</body>
+</html>

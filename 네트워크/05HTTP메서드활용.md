@@ -76,7 +76,7 @@
   ```html
   <form action="/save" method="post" enctype="multipart/form-data">
     <input type="text" name="username" />
-    <input type="text" name="username" />
+    <input type="text" name="age" />
     <input type="file" name="file1" />
     <button type="submit">전송</button>
   </form>

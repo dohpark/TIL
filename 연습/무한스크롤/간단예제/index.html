@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    html, body {
+      margin: 0;
+    }
+    section .box {
+      height: 500px;
+      background-color: tomato;
+      color: white;
+      box-sizing: border-box;
+      padding: 30px 10px;
+    }
+    section .box:nth-child(2n) {
+      background-color: teal;
+    }
+  </style>
+</head>
+<body>
+  <section>
+    <div class="box">1번째 블록</div>
+    <div class="box">2번째 블록</div>
+  </section>
+
+  <script>
+    let count = 2;
+
+    // window.onscroll = function () {
+    //   if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+    //     let toAdd = document.createElement('div');
+    //     toAdd.classList.add('box');
+    //     toAdd.textContent = `${++count}번재 블록`
+    //     document.querySelector('section').appendChild(toAdd);
+    //   }
+    // }
+
+    window.addEventListener('scroll', () => {
+      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+        let toAdd = document.createElement('div');
+        toAdd.classList.add('box');
+        toAdd.textContent = `${++count}번재 블록`
+        document.querySelector('section').appendChild(toAdd);
+      }
+    })
+
+    // onscroll은 하나만 존재함. 그래서 다른 onscroll은 override 됨
+    // 그러나 window.addEventListener('scroll', () => {})의 경우 원하는만큼 계속 추가할 수 있음!
+    // 또한 보안적으로 .addEventListener을 사용하는 것을 추천함. 
+    // script injection으로 onxxx function 사용을 권장하지 않음
+  </script>
+</body>
+</html>
