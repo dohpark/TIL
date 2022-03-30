@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>이벤트 캡쳐</title>
+</head>
+<body>
+  <div class="one">
+		<div class="two">
+			<div class="three">
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+  const divs = document.querySelectorAll('div');
+  divs.forEach((div) => {
+	  div.addEventListener('click', logEvent, { capture: true }); // capture의 default 값은 false
+  });
+
+  const logEvent = (event) => {
+	  console.log(event.currentTarget.className);
+    /*
+     * one
+     * two
+     * three
+     */
+  }
+  /*
+   * 이벤트 캡쳐: 상위에서 하위 요소로 이벤트 전파하는 방식 
+   * 그래서 위 예시에서 가장 상위 요소부터 이벤트가 시작됨을 볼 수 있음
+   * 
+   * 필요시
+   * event.stopPropagation()을 통해 이벤트의 전파를 막을 수 있음.
+   * 이벤트 버블링과 캡쳐 둘다에 사용 가능
+   * 
+   * 출처: https://joshua1988.github.io/web-development/javascript/event-propagation-delegation/
+   */
+</script>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Throttle</title>
+</head>
+<body>
+  <input type="text" id="input">
+  <script>
+    let timer;
+    document.querySelector('#input').addEventListener('input', function (e) {
+      if (!timer) {
+        timer = setTimeout(function() {
+          timer = null;
+          console.log('여기에 ajax 요청', e.target.value);
+        }, 3000);
+      }
+    });
+    // 출처: https://www.zerocho.com/category/JavaScript/post/59a8e9cb15ac0000182794fa
+
+    function throttle(callback, limit = 100) {
+      let waiting = false
+      return function() {
+        if(!waiting) {
+          callback.apply(this, arguments)
+          waiting = true
+          setTimeout(() => {
+            waiting = false
+          }, limit)
+        }
+      }
+    }
+    // 출처: http://yoonbumtae.com/?p=3584
+
+    // callback: 실행 대상이 되는 콜백 함수입니다.
+    // limit: 얼마 간격으로 함수를 실행할 지 결정하며 millisecond 단위입니다.
+    // waiting 상태가 true 인 경우는 if문이 실행되지 않습니다.
+    // 최초 함수가 호출되었을 때 waiting은 false이며 if문이 실행됩니다. 이 때 콜백 함수를 실행한 뒤 다시 waiting은 true가 됩니다.
+    // waiting이 true가 되었을 때 limit 밀리초 후에는 waiting이 강제로 false가 되고, 다시 콜백 함수가 실행이 됩니다.
+    // apply 메소드는 this의 범위를 지정할 수 있습니다. 여기서 this의 범위로 콜백 함수가 실행될 때 그 컨텍스트의 this가 배정됩니다.
+    // 출처: http://yoonbumtae.com/?p=3584
+
+
+    // 위와 같음
+    // document.querySelector('#input').addEventListener('input', throttle((e) => {
+    //   console.log('여기에 ajax 요청', e.target.value);
+    // }), 3000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>이벤트 버블링</title>
+</head>
+<body>
+  <div class="one">
+		<div class="two">
+			<div class="three">
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+  const divs = document.querySelectorAll('div');
+  divs.forEach((div) => {
+	  div.addEventListener('click', logEvent);
+  });
+
+  const logEvent = (event) => {
+	  console.log(event.currentTarget.className);
+    /*
+     * three
+     * two
+     * one
+     */
+  }
+  /*
+   * 이벤트 버블링: 하위에서 상위 요소로 이벤트 전파하는 방식 
+   * 그래서 위 예시에서 가장 하위 요소부터 이벤트가 시작됨을 볼 수 있음
+   * addEventListener의 default임
+   * 
+   * 출처: https://joshua1988.github.io/web-development/javascript/event-propagation-delegation/
+   */
+</script>
+</html>

@@ -39,7 +39,7 @@ class Album {
     if (this.breadcrumb.routes.length <= 1) {
       return;
     }
-    this.breadcrumb.back();
+    this.breadcrumb.back();aw
     const parentNode = this.breadcrumb.getParentNode();
     const nodeID = parentNode?.id;
     await this.fetchFinder(nodeID);

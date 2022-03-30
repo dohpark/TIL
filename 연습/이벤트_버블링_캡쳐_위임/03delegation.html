@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>이벤트 위임</title>
+</head>
+<body>
+  <h1>오늘의 할 일</h1>
+  <ul class="itemList">
+	  <li>
+		  <input type="checkbox" id="item1">
+		  <label for="item1">이벤트 버블링 학습</label>
+	  </li>
+	  <li>
+		  <input type="checkbox" id="item2">
+		  <label for="item2">이벤트 캡쳐 학습</label>
+	  </li>
+  </ul>
+
+</body>
+<script>
+  const inputs = document.querySelectorAll('input');
+  inputs.forEach((input) => {
+	  input.addEventListener('click', (event) => {
+		  alert('clicked');
+	  });
+  });
+  /*
+   * 만약에 위와 같은 todo 앱이 있다고 함.
+   * todo 앱에 새로운 todo를 넣을 수 있는 기능을 넣고 싶음!
+   * 현재 상태에서 checkbox를 만들려면 js로 만들어야함
+   */
+  
+  var itemList = document.querySelector('.itemList');
+  var li = document.createElement('li');
+  var input = document.createElement('input');
+  var label = document.createElement('label');
+  var labelText = document.createTextNode('이벤트 위임 학습');
+  
+  input.setAttribute('type', 'checkbox');
+  input.setAttribute('id', 'item3');
+  label.setAttribute('for', 'item3');
+  label.appendChild(labelText);
+  li.appendChild(input);
+  li.appendChild(label);
+  itemList.appendChild(li);
+
+  /*
+   * 이럴 경우 해당 checkbox에 대한 eventListener을 새롭게 작성해야함
+   * 그러나 event delegation 방법을 사용하면 굳이 작성 안해도 됨.
+   * 이벤트 버블링을 통해 요소의 상위 요소에 eventListener을 작성함으로 아래 요소를 클릭해도 상위 요소에서 이벤트를 처리할 수 있도록 하는 것임.
+   * 
+   * 위 예시의 경우 각 input 요소에 event listener을 작성하는 것보다 상위 요소인 ul 요소에 이벤트 리스너 하나만 작성하면 됨
+   * 
+   */
+
+  const itemList = document.querySelector('.itemList');
+  itemList.addEventListener('click', (event) => {
+	  alert('clicked');
+  });
+
+  /*
+   * 이젠 굳이 모든 input에 event listener을 작성 안해도 됨! 
+   
+   * 출처: https://joshua1988.github.io/web-development/javascript/event-propagation-delegation/
+   */
+
+
+</script>
+</html>
