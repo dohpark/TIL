@@ -281,15 +281,21 @@
 - thread cancellation은 데이터 업데이트 중의 종료와 같은 상황에서 어려움을 부딪침.
   - asynchrouns의 경우 가장 위험한 상황. 리소스들을 되찾을 수도 있긴 하지만 전부 되찾기에는 힘듬. 그래서 중요한 전역 시스템의 리소스의 경우 해제하지 않을 수도 있음.
   - deferred의 경우 종료되어야함을 인지한 후 종료하기에 안전한 상황에 다다르면 비로소 종료함.
+- Pthread 예시
+  - 3가지의 cancellation 모드가 있음
+    - off: cancellation이 불가능함.
+    - deferred: 디폴트값
+    - asynchronous
+  - cancellation point에 도달해야 취소 가능함. cleanup handler 함수를 실행하도록하여 thread가 cancel되었음을 알 수 있음.
+  - asynchronous는 권장되지 않음
+- Linux
+  - thread cancellation에서 signal을 활용함
+- Java
+  - PThread의 deferred cancellation과 유사함
 
 ### 4.6.4 Thread-Local Storage
 
-### 4.6.5 Scheduler Activations
-
-## 4.7 Operating-System Examples
-
-- 윈도우와 리눅스에서 쓰레드가 어떻게 구현되어 있는지 알아보며 이번 챕터를 마무리 하겠음
-
-### 4.7.1 Windows Threads
-
-### 4.7.2 Linux Threads
+- 어떤 경우에는 각 thread가 특정 데이터를 복사하여 지니고 있어야함. 이를 thread-local storgae(TLS)라 부름.
+- 예를 들어 transaction-processing system에서 각 transaction마다 별도의 thread를 사용할 수 있음. 또한 각 transaction에게 unique identifier을 할당할 수도 있음. 각 thread와 unique transaction identifier을 묶기 위해서는 thread-local storage를 사용할 수 있음.
+- TLS data are visible across function invocations
+- TLS는 static data와 유사함. (사실 대부분 static으로 선언됨)
